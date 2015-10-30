@@ -4,6 +4,9 @@ namespace OCA\Files_Sharing\API;
 
 class OCSShareWrapper {
 
+	/**
+	 * @return Share20OCS
+	 */
 	private function getShare20OCS() {
 		return new share20OCS(new \OC\Share20\Manager(
 		                   \OC::$server->getUserSession()->getUser(),
@@ -13,7 +16,10 @@ class OCSShareWrapper {
 		                   \OC::$server->getAppConfig(),
 		                   \OC::$server->getUserFolder(),
 		                    new \OC\Share20\DefaultShareProvider(
-		                       \OC::$server->getDatabaseConnection()
+		                       \OC::$server->getDatabaseConnection(),
+							   \OC::$server->getUserManager(),
+							   \OC::$server->getGroupManager(),
+							   \OC::$server->getUserFolder()
 		                   )
 		               ),
 		               \OC::$server->getGroupManager(),
@@ -39,6 +45,7 @@ class OCSShareWrapper {
 	}
 
 	public function deleteShare($params) {
-		return \OCA\Files_Sharing\API\Local::deleteShare($params);
+		$id = (int)$params['id'];
+		return $this->getShare20OCS()->deleteShare($id);
 	}
 }
